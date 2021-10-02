@@ -1,4 +1,16 @@
-.header{
+#header{
+    text-align: center;
     color: white;
-    background: linear-gradient(lightblue,blue,darkblue);
+    background: linear-gradient(90deg, rgba(131,58,180,1), rgba(253, 29, 29, 1), rgba(252, 240, 69, 1))
+}
+
+#city-search{
+    margin: 0;
+    text-align: left;
+}
+
+#weather-display{
+    border: 1px solid gray;
+    width: 100%;
+    height: 500px;
 }
