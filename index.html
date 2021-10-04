@@ -20,16 +20,17 @@
         <div id="city-search" class="col-3">
             <h2>Search for a City:</h2>
             <div class="col-4 align-items-start">
-                <form>
-                    <input type="text" name="search" id="search" placeholder="City Name" />
-                    <input type="submit" value="Search" id="submit" />
+                <form id="city-form">
+                    <input type="text" name="search" id="search" placeholder="City Name" autofocus="true" class="form-input" />
+                    <button type="submit" class="btn">Search</button>
                 </form>
                 <div class="align-items-end" id="cities"></div>
             </div>
         </div>
         <div class="col-9">
-            <div id="weather-display" class="align-items-start">
-                weather
+            <div class="align-items-start">
+                <h2 class="subtitle">weather<span id="weather-search-term"></span></h2>
+                <div id="weather-display"></div>
             </div>
             <div id="5-day" class="align-items-end">
                 <h2>5-Day Forecast</h2>
