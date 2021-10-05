@@ -2,7 +2,12 @@ var cityInput = document.querySelector("#search");
 var cityFormEl = document.querySelector("#city-form")
 var weatherDisplay = document.querySelector("#weather-display");
 var weatherSearchTerm = document.querySelector("#weather-search-term");
-var forecastEl = document.querySelector("#five-day");
+var forecastEl = document.querySelector(".five-day");
+var forecastE2 = document.querySelector("#dayTwo");
+var forecastE3 = document.querySelector("#dayThree");
+var forecastE4 = document.querySelector("#dayFour");
+var forecastE5 = document.querySelector("#dayFive");
+var cities = [];
 
 
 
@@ -11,10 +16,16 @@ var formSubmitHandler = function (event) {
 
     var city = cityInput.value.trim();
 
+
     if (cityInput) {
         getWeatherCity(city);
         weatherDisplay.textContent = "";
         cityInput.value = "";
+        forecastEl.textContent="";
+        forecastE2.textContent='';
+        forecastE3.textContent='';
+        forecastE4.textContent='';
+        forecastE5.textContent='';
     }
     else {
         alert("Please enter a City")
@@ -41,6 +52,14 @@ var getWeatherCity = function (city) {
             alert("Unable to connect to weather data")
         });
     console.log(city);
+        
+    cities.push(city);
+
+    localStorage.setItem("searchcity", JSON.stringify(cities));
+
+    var saved = JSON.parse(localStorage.getItem("searchcity"));
+    console.log(saved);
+
 };
 
 
@@ -48,11 +67,6 @@ var displayWeather = function (data, searchTerm) {
     var date= moment.unix(data.dt).format("MM/DD/YYYY");
 
     weatherSearchTerm.textContent = "Weather in " + searchTerm + " " + date;
-
-
-
-
-
 
     var getWeather = function (lat, long) {
         var lat = (data.coord.lat);
@@ -69,56 +83,20 @@ var displayWeather = function (data, searchTerm) {
                     displayForecast3(data);
                     displayForecast4(data);
                     displayForecast5(data);
-                    uviData(data);
                 });
         })
         console.log(apUrl);
 
     }
     var displayData = function (data) {
-        let stuff = ["Temperature: " + data.current.temp + "F", "Wind Speed: " + data.current.wind_speed + "mph", "Humidity: " + data.current.humidity + "%"];
+        let stuff = ["Temperature: " + data.current.temp + "F", "Wind Speed: " + data.current.wind_speed + "mph", "Humidity: " + data.current.humidity + "%", "UVI: " + data.current.uvi];
         let list = document.getElementById("weather-display")
         stuff.forEach((item) => {
             let li = document.createElement("li");
             li.innerText = item;
             list.appendChild(li);
+        }) 
 
-            var uvi = (data.current.uvi)
-
-            if (uvi < 5){
-                li.innerHTML ="<li class='bg-success'></li>"
-            }
-            if (uvi > 5) {
-                li.innerHTML = "<li class= 'bg-warning'</li>"
-            }
-            if(uvi > 8) {
-                li.innerHTML = "li class= 'bg-danger'"
-            }
-        })
-        
-
-
-        
-
-    }
-
-    var uviData = function(data) {
-
-        var uviEl = document.querySelector("#uv");
-
-        var uvi = (data.current.uvi)
-        
-        uviEl.textContent= "UVI: " + uvi;
-
-        if (uvi < 5){
-            uviEl.innerHTML ="<li class='bg-success'></li>"
-        }
-        if (uvi > 5) {
-            uviEl.innerHTML = "<li class= 'bg-warning'</li>"
-        }
-        if(uvi > 8) {
-            uviEl.innerHTML = "li class= 'bg-danger'"
-        }
     }
 
     var displayForecast1 = function (data) {
