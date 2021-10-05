@@ -30,14 +30,22 @@
         <div class="col-9">
             <div class="align-items-start">
                 <h2 class="subtitle"><span id="weather-search-term"></span></h2>
-                <ul id="weather-display"></ul>
+                <ul id="weather-display"><li id="uv"></li></ul>
             </div>
-            <div id="5-day" class="align-items-end">
+            <div class="align-items-end">
                 <h2>5-Day Forecast</h2>
+                <div id="five-day">
+                    <div><ul id="dayOne"></ul></div>
+                    <div><ul id="dayTwo"></ul></div>
+                    <div><ul id="dayThree"></ul></div>
+                    <div><ul id="dayFour"></ul></div>
+                    <div><ul id="dayFive"></ul></div>
+                </div>
             </div>
         </div>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="assets/js/script.js"></script>
 </body>
 

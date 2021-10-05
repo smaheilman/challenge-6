@@ -2,6 +2,7 @@ var cityInput = document.querySelector("#search");
 var cityFormEl = document.querySelector("#city-form")
 var weatherDisplay = document.querySelector("#weather-display");
 var weatherSearchTerm = document.querySelector("#weather-search-term");
+var forecastEl = document.querySelector("#five-day");
 
 
 
@@ -11,8 +12,7 @@ var formSubmitHandler = function (event) {
     var city = cityInput.value.trim();
 
     if (cityInput) {
-        getWeather(city);
-        displayData (city);
+        getWeatherCity(city);
         weatherDisplay.textContent = "";
         cityInput.value = "";
     }
@@ -20,9 +20,8 @@ var formSubmitHandler = function (event) {
         alert("Please enter a City")
     }
 }
-var post;
 
-var getWeather = function (city) {
+var getWeatherCity = function (city) {
     var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=5892e2480d6960f5cd946e34ca7a09e1";
 
     fetch(apiUrl)
@@ -31,52 +30,7 @@ var getWeather = function (city) {
                 //console.log(response);
                 response.json().then(function (data) {
                     //console.log(data);
-                   var long = (data.coord.lon);
-                   var lat = (data.coord.lat);
-
-                    return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + long + "&exclude=minutely,hourly&appid=5892e2480d6960f5cd946e34ca7a09e1");
-                });
-                .then(function(response) {
-                    if(response.ok) {
-                        return response.json();
-                    }
-                    else {
-                        alert("Error: " + response.statusText);
-                    }
-                }).then(function(data) {
-                    console.log(long,lat,data);
-                })
-            }
-        .catch(function (error) {
-            alert("Unable to connect to weather data")
-        });
-    console.log(city);
-};
-
-
-var displayWeather = function (data, searchTerm) {
-
-    weatherSearchTerm.textContent = "Weather in " + searchTerm;
-
-    //let stuff = ["Temperature: " + data.main.temp, "Wind Speed: " + data.wind.speed + "mph", "Humidity: " + data.main.humidity + "%"];
-    //let list = document.getElementById("weather-display")
-    //stuff.forEach((item)=>{
-        //let li = document.createElement("li");
-        //li.innerText = item;
-        //list.appendChild(li);
-   // });
-
-    var lat = (data.coord.lat);
-    var long = (data.coord.lon);
-
-    var apUrl ="https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + long + "&exclude=minutely,hourly&appid=5892e2480d6960f5cd946e34ca7a09e1";
-    
-    fetch(apUrl)
-        .then(function (response) {
-            if (response.ok) {
-                //console.log(response);
-                response.json().then(function (data) {
-                    displayData = (data)
+                    displayWeather(data, city);
                 });
             }
             else {
@@ -86,12 +40,143 @@ var displayWeather = function (data, searchTerm) {
         .catch(function (error) {
             alert("Unable to connect to weather data")
         });
-    
-  
-}
+    console.log(city);
+};
 
-var displayData = function (data) {
-    console.log(data);
+
+var displayWeather = function (data, searchTerm) {
+    var date= moment.unix(data.dt).format("MM/DD/YYYY");
+
+    weatherSearchTerm.textContent = "Weather in " + searchTerm + " " + date;
+
+
+
+
+
+
+    var getWeather = function (lat, long) {
+        var lat = (data.coord.lat);
+        var long = (data.coord.lon);
+
+        var apUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + long + "&units=imperial&exclude=minutely,hourly&appid=5892e2480d6960f5cd946e34ca7a09e1";
+
+        fetch(apUrl).then(function (response) {
+            if (response.ok)
+                response.json().then(function (data) {
+                    displayData(data);
+                    displayForecast1(data);
+                    displayForecast2(data);
+                    displayForecast3(data);
+                    displayForecast4(data);
+                    displayForecast5(data);
+                    uviData(data);
+                });
+        })
+        console.log(apUrl);
+
+    }
+    var displayData = function (data) {
+        let stuff = ["Temperature: " + data.current.temp + "F", "Wind Speed: " + data.current.wind_speed + "mph", "Humidity: " + data.current.humidity + "%"];
+        let list = document.getElementById("weather-display")
+        stuff.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText = item;
+            list.appendChild(li);
+
+            var uvi = (data.current.uvi)
+
+            if (uvi < 5){
+                li.innerHTML ="<li class='bg-success'></li>"
+            }
+            if (uvi > 5) {
+                li.innerHTML = "<li class= 'bg-warning'</li>"
+            }
+            if(uvi > 8) {
+                li.innerHTML = "li class= 'bg-danger'"
+            }
+        })
+        
+
+
+        
+
+    }
+
+    var uviData = function(data) {
+
+        var uviEl = document.querySelector("#uv");
+
+        var uvi = (data.current.uvi)
+        
+        uviEl.textContent= "UVI: " + uvi;
+
+        if (uvi < 5){
+            uviEl.innerHTML ="<li class='bg-success'></li>"
+        }
+        if (uvi > 5) {
+            uviEl.innerHTML = "<li class= 'bg-warning'</li>"
+        }
+        if(uvi > 8) {
+            uviEl.innerHTML = "li class= 'bg-danger'"
+        }
+    }
+
+    var displayForecast1 = function (data) {
+        var date= moment.unix(data.daily[1].dt).format("MM/DD/YYYY");
+
+        let forecast = [date, "Temp: " + data.daily[1].temp.day + "F", data.daily[1].weather[0].icon, "Wind Speed: " + data.daily[1].wind_speed + "mph", "Humidty: " + data.daily[1].humidity + "%"]
+        let list = document.getElementById("dayOne")
+        forecast.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText= item;
+            list.appendChild(li);
+        }) 
+    }
+    var displayForecast2 = function (data) {
+        var date= moment.unix(data.daily[2].dt).format("MM/DD/YYYY");
+
+        let forecast = [date, "Temp: " + data.daily[2].temp.day + "F", data.daily[2].weather[0].icon, "Wind Speed: " + data.daily[2].wind_speed + "mph", "Humidty: " + data.daily[2].humidity + "%"]
+        let list = document.getElementById("dayTwo")
+        forecast.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText= item;
+            list.appendChild(li);
+        }) 
+    }
+    var displayForecast3 = function (data) {
+        var date= moment.unix(data.daily[3].dt).format("MM/DD/YYYY");
+
+        let forecast = [date, "Temp: " + data.daily[3].temp.day + "F", data.daily[3].weather[0].icon, "Wind Speed: " + data.daily[3].wind_speed + "mph", "Humidty: " + data.daily[3].humidity + "%"]
+        let list = document.getElementById("dayThree")
+        forecast.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText= item;
+            list.appendChild(li);
+        }) 
+    }
+    var displayForecast4 = function (data) {
+        var date= moment.unix(data.daily[4].dt).format("MM/DD/YYYY");
+
+        let forecast = [date, "Temp: " + data.daily[4].temp.day + "F", data.daily[4].weather[0].icon, "Wind Speed: " + data.daily[4].wind_speed + "mph", "Humidty: " + data.daily[4].humidity + "%"]
+        let list = document.getElementById("dayFour")
+        forecast.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText= item;
+            list.appendChild(li);
+        }) 
+    }
+    var displayForecast5 = function (data) {
+        var date= moment.unix(data.daily[5].dt).format("MM/DD/YYYY");
+
+        let forecast = [date, "Temp: " + data.daily[5].temp.day + "F", data.daily[5].weather[0].icon, "Wind Speed: " + data.daily[5].wind_speed + "mph", "Humidty: " + data.daily[5].humidity + "%"]
+        let list = document.getElementById("dayFive")
+        forecast.forEach((item) => {
+            let li = document.createElement("li");
+            li.innerText= item;
+            list.appendChild(li);
+        }) 
+    }
+    getWeather();
 }
 
 
