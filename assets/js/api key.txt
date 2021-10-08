@@ -1,0 +1,11 @@
+5892e2480d6960f5cd946e34ca7a09e1
+
+var displayWeather = function (weather, searchTerm) {
+    weatherSearchTerm.textContent = searchTerm;
+
+    for ( var i = 0; i < weather.length; i++) {
+        var cityWeather = weather[i]
+    }
+}
+
+ var apUrl ="https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + long + "&exclude=minutely,hourly&appid=5892e2480d6960f5cd946e34ca7a09e1";
