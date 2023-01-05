@@ -2,21 +2,19 @@ var cityInput = document.querySelector("#search");
 var cityFormEl = document.querySelector("#city-form")
 var weatherDisplay = document.querySelector("#weather-display");
 var weatherSearchTerm = document.querySelector("#weather-search-term");
-var forecastEl = document.querySelector(".forecast");
 var forecastE1 = document.querySelector("#dayOne")
 var forecastE2 = document.querySelector("#dayTwo");
 var forecastE3 = document.querySelector("#dayThree");
 var forecastE4 = document.querySelector("#dayFour");
 var forecastE5 = document.querySelector("#dayFive");
+var cityDisplay = document.querySelector("#savedCity")
 var cities = [];
-
 
 
 var formSubmitHandler = function (event) {
     event.preventDefault();
 
     var city = cityInput.value.trim();
-
 
     if (cityInput) {
         getWeatherCity(city);
@@ -27,11 +25,64 @@ var formSubmitHandler = function (event) {
         forecastE3.textContent='';
         forecastE4.textContent='';
         forecastE5.textContent='';
+        cities.push(city);
+        localStorage.setItem("searchcity", JSON.stringify(cities));
     }
     else {
         alert("Please enter a City")
     }
 }
+
+const displayCities = () => {
+    let cityDataOne = JSON.parse(localStorage.getItem("searchcity"))
+    
+    function removeDuplicates(cityDataOne) {
+        return cityDataOne.filter((item,
+            index) => cityDataOne.indexOf(item) === index);
+    }
+
+    let cityDataTwo = (removeDuplicates(cityDataOne))
+
+    let cityDataThree = cityDataTwo.filter(function (item) {
+        return item}
+    );
+
+    console.log(cityDataThree)
+
+    let cityList = document.getElementById("savedCity")
+
+    cityDataThree.forEach((item) => {
+        let li = document.createElement("li");
+        let cityButton = document.createElement("button")
+        cityButton.setAttribute('id', 'cityButton')
+        cityButton.innerText = item
+        const buttonWeather = (event) => {
+            event.preventDefault();
+
+            getWeatherCity(item);
+            weatherDisplay.textContent = "";
+            cityInput.value = "";
+            forecastE1.textContent="";
+            forecastE2.textContent='';
+            forecastE3.textContent='';
+            forecastE4.textContent='';
+            forecastE5.textContent='';
+
+            console.log(item)
+        }
+
+        cityButton.addEventListener('click', buttonWeather)        
+        li.appendChild(cityButton)
+        cityList.appendChild(li)
+    })
+
+    const cityBtn = document.getElementById('cityButton')
+
+    cityBtn.addEventListener('click', console.log(cityBtn.innerText))
+}
+
+displayCities();
+
 
 var getWeatherCity = function (city) {
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=5892e2480d6960f5cd946e34ca7a09e1";
@@ -52,14 +103,22 @@ var getWeatherCity = function (city) {
         .catch(function (error) {
             alert("Unable to connect to weather data")
         });
-    console.log(city);
+    //console.log(city);
         
-    cities.push(city);
+    //cities.push(city);
     
-    cities = cities.concat(JSON.parse(localStorage.getItem("searchcity")))
-    localStorage.setItem("searchcity", JSON.stringify(cities));
+    
 
-    console.log(cities);
+    // cities = cities.concat(JSON.parse(localStorage.getItem("searchcity")))
+    //localStorage.setItem("searchcity", JSON.stringify(cities));
+
+    //console.log(cities);
+
+    function getCity() {
+        return localStorage.getItem('searchcity');
+    }
+
+    console.log(getCity());
 
 };
 
@@ -95,14 +154,38 @@ var displayWeather = function (data, searchTerm) {
         console.log(apUrl);
 
     }
+
     var displayData = function (data) {
-        let stuff = ["Temperature: " + data.current.temp + "F", "Wind Speed: " + data.current.wind_speed + "mph", "Humidity: " + data.current.humidity + "%", "UVI: " + data.current.uvi];
+        let stuff = ["Temperature: " + data.current.temp + "F", "Wind Speed: " + data.current.wind_speed + "mph", "Humidity: " + data.current.humidity + "%"];
         let list = document.getElementById("weather-display")
+
+        const UVI = () => {
+            let uviName = document.createElement("li");
+            let uviData = document.createElement("span");
+            uviData.setAttribute('id', "UVI");
+            uviData.innerText = [data.current.uvi]
+            uviName.innerText = ['UVI: ']
+            uviName.appendChild(uviData)
+            list.appendChild(uviName)
+            const UVI = document.getElementById("UVI")
+            if (uviData.innerText <= 4.99) {
+                UVI.style.setProperty('--uvi-color', 'green');
+            } if (uviData.innerText >= 5) {
+                UVI.style.setProperty('--uvi-color', 'yellow');
+            } if (uviData.innerText >= 7) {
+                UVI.style.setProperty('--uvi-color', 'red');
+            }
+
+        }
+
         stuff.forEach((item) => {
             let li = document.createElement("li");
             li.innerText = item;
             list.appendChild(li);
-        }) 
+        })         
+
+        UVI();
+        
 
     }
 
@@ -189,6 +272,5 @@ var displayWeather = function (data, searchTerm) {
     }
     getWeather();
 }
-
 
 cityFormEl.addEventListener("submit", formSubmitHandler);
